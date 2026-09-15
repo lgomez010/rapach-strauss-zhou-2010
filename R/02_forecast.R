@@ -8,6 +8,15 @@
 #
 #Input: data/processed/predictor.rds
 #Output: (to be determined) - forecast results)
+#
+#
+#
+# NOTE: We use Goyal's 2024 vintage of PredictorData. The paper used the
+# 2008 vintage. Results match Table 1, Panel A for 14/15 predictors.
+# IK (investment-to-capital ratio) shows R^2_OS = 1.95% vs. the paper's
+# 1.44%, because the BEA has revised the underlying investment and capital
+# stock series multiple times since the paper was published. All other
+# predictors are market-based and not subject to revision.
 #===================================================================
 
 library(dplyr)
@@ -17,10 +26,10 @@ data <- readRDS("data/processed/predictors.rds")
 
 #--- define the sample split for out-of-sample forecasting
 #--- paper uses 1947:Q1-2005:Q4 (236 rows, already in 01_load_data.R
-#--- out-od-sample period starts 1965:Q1
+#--- out-of-sample period starts 1965:Q1
 #--- this means the inital in-sample window is 1947:Q1-1964:Q4 = 72 quarters
 
-oos_start <- which(data$yyyyq == 19651) # row index where OOS geins
+oos_start <- which(data$yyyyq == 19651) # row index where OOS begins
 cat("OOS starts at row:", oos_start, "\n")
 cat("Initital in-sample size:", oos_start - 1, "quarters\n")
 cat("Out-of-Sample size:", nrow(data) - oos_start + 1, "quarters\n")
@@ -30,7 +39,6 @@ predictors <- c("DP", "DY", "EP", "DE", "SVAR", "BM", "NTIS",
                 "TBL", "LTY", "LTR", "TMS", "DFY", "DFR",
                 "INFL", "IK")
 
-# --- prepare storage
 # we need to store forecast for each OOS quarter
 # n_oos = number of out-of-sample quarters
 n_oos <- nrow(data) - oos_start + 1     # 164 total
@@ -46,8 +54,8 @@ colnames(f_pred) <- predictors
 #--- expanding-window loop
 # At each OOS quarter s, we:
 #  1. use rows 1:(s-1) as training data
-#. 2. row s-1 has the predictor values x_t we plug into the forecast
-#. 3. row s has the realized return r_{t+1} we want to forecast
+#  2. row s-1 has the predictor values x_t we plug into the forecast
+#  3. row s has the realized return r_{t+1} we want to forecast
 # 
 # we use s-1 because the regression is r_{t+1} = alpha + beta * x_t
 # and the training pairs are (x_t,r_{t+1}) for t = [1:(s-2)]

@@ -45,8 +45,8 @@ data <- data %>%
     DE = log(D12) - log(E12),           # Dividend-payout ratio
     #----- Volatility / equity market predictors
     SVAR = svar,                        # Stock variance
-    BM = `b/m`,                         # Book-to-market ratio
-    NTIS = ntis,                        # Net equity issuance
+    BM   = `b/m`,                       # Book-to-market ratio
+    NTIS = ntis,                        # Net equity expansion
     # --- Interest rates
     TBL = tbl,                          # Treasury bill rate (3 month)
     LTY = lty,                          # Long-term yield (10 year)
@@ -57,7 +57,7 @@ data <- data %>%
     DFR = corpr - ltr,                  # Default return spread
     # --- Macro predictors
     INFL = infl,                        # Inflation (lagged 1 quarter)
-    IK = ik,                            # Investment-to-capital ratio
+    IK   = ik,                          # Investment-to-capital ratio
     # ---- Equity premium
     equity_premium = log(1 + CRSP_SPvw) - log(1 + Rfree)    # log excess return
   )
